@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+
+  database:
+    build: ./database_service
+    ports:
+      - "3307:3306"  # Mapping container's MySQL port 3306 to host port 3307
+    networks:
+      - my-app-network
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    ports:
+      - "5672:5672"  # RabbitMQ messaging port
+      - "15673:15672"  # RabbitMQ management UI port
+    networks:
+      - my-app-network
+
+  producer:
+    build: ./producer
+    ports:
+      - "5000:5000"
+    networks:
+      - my-app-network
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+  consumer_one:
+    build: ./consumer_one
+    networks:
+      - my-app-network
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+  consumer_two:
+    build: ./consumer_two
+    networks:
+      - my-app-network
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+  consumer_three:
+    build: ./consumer_three
+    networks:
+      - my-app-network
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+  consumer_four:
+    build: ./consumer_four
+    networks:
+      - my-app-network
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+networks:
+  my-app-network: 
+    driver: bridge
