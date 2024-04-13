@@ -3,10 +3,9 @@ import subprocess
 import json
 
 # Establish connection to RabbitMQ server
-connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
 channel = connection.channel()
 
-# Establish connection to MySQL database
 def check_container_health(container_name):
     try:
         # Execute the docker inspect command to get the health status of the container

@@ -3,15 +3,15 @@ import mysql.connector
 import json
 
 # Establish connection to RabbitMQ server
-connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
 channel = connection.channel()
 
 # Establish connection to MySQL database (consider using a connection pool)
 mysql_connection = mysql.connector.connect(
-    host='database',
+    host='localhost',
     port=3306,
     user='root',
-    password='mypassword',
+    password='Saketh$12485',
     database='cc_project'
 )
 mysql_cursor = mysql_connection.cursor()
