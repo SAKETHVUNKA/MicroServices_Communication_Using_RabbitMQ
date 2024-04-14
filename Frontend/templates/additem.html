@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Item</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin:15px;
+        padding: 30px;
+        align-content: center;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.463);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .column {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 48%; /* Adjusts the column width for larger screens */
+        margin-bottom: 10px; /* Spacing for when stacked on smaller screens */
+      }
+
+      label {
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      input[type="file"],
+      textarea,
+      button {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.671);
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+      }
+
+      textarea {
+        height: 100px; /* Fixed height for text area */
+        resize: vertical;
+      }
+
+      button {
+        background-color: #5cb85c;
+        margin-top: 30px;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        height: 40px; /* Set a fixed height for the button */
+      }
+
+      button:hover {
+        background-color: #4cae4c;
+      }
+
+      button:active{
+        transform:scale(0.98);
+      }
+
+      /* Responsive layout for smaller screens */
+      @media (max-width: 768px) {
+        .column {
+          flex-basis: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form>
+        <div class="row">
+          <div class="column">
+            <label for="itemName">Item Name:</label>
+            <input type="text" id="itemName" name="itemName" />
+          </div>
+          <div class="column">
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" />
+          </div>
+          <div class="column">
+            <label for="purchasePrice">Purchase Price:</label>
+            <input type="text" id="purchasePrice" name="purchasePrice" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <label for="dateManufacture">Date of Manufacture:</label>
+            <input type="date" id="dateManufacture" name="dateManufacture" />
+          </div>
+          <div class="column">
+            <label for="useBy">Use By (If Valid):</label>
+            <input type="date" id="useBy" name="useBy" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <label for="placeManufacture">Place of Manufacture:</label>
+            <input type="text" id="placeManufacture" name="placeManufacture" />
+          </div>
+          <div class="column">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <label for="distributor">Distributor:</label>
+            <input type="text" id="distributor" name="distributor" />
+          </div>
+          <div class="column">
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <label for="imageUpload">Image Upload:</label>
+            <input type="file" id="imageUpload" name="imageUpload" />
+          </div>
+          <div class="column">
+            <button type="submit">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

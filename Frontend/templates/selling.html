@@ -1,0 +1,85 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>new item</title>
+    <style>
+      body {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        background-image: url("/static/loan.jpeg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        font-family: Arial, sans-serif;
+        margin: 10px;
+      }
+
+      .lender-box {
+        display: flex; /* Use flexbox for the container */
+        flex-direction: column; /* Stack child elements vertically */
+        justify-content: space-between; /* Space evenly between child elements */
+        border: 3px solid #cccccc;
+        padding: 20px;
+        margin: 5%;
+        width: 33%;
+        min-width: 237px;
+      }
+
+      
+
+      .select-button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        align-self: flex-end; /* Align button to the bottom */
+      }
+
+      .form-control {
+  padding: 10px;
+  margin: 5px 0; /* Add some space above and below the form controls */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* This ensures padding doesn't affect the overall width */
+  width: 100%; /* This will make the select and input elements take the full width of their parent container */
+}
+
+/* You can then apply this class to your select and input elements in the HTML. */
+
+    </style>
+  </head>
+  <body>
+    <div class="lender-box">
+      <div class="discription">
+        
+        <div id="data">
+          <p>Item Name : 
+            <select name="dropdown" id="" class="form-control">
+                <option value="">option1</option>
+                <option value="">option2</option>
+                <option value="">option3</option>
+            </select>
+        </p>
+        <p>Selling Price : <input type="number" class="form-control"> per unit</p>
+        <p>No of Units : <input type="number" class="form-control"></p>
+        </div>
+      </div>
+      <button type="submit" class="select-button">Add</button>
+    </div>  
+    </div>  
+  </body>
+  <script>
+  </script>
+</html>
+
+
