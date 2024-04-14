@@ -216,7 +216,7 @@ import json
 app = Flask(__name__)
 
 def establish_connection():
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
     return connection
 
 def get_channel():

@@ -29,6 +29,7 @@ CREATE TABLE Orders (
   total_price DECIMAL(10,2) NOT NULL,
   status ENUM('placed', 'shipped', 'delivered', 'cancelled'),  
   PRIMARY KEY (order_id)
+  -- buyer info to be added and handled in backend
 );
 
 CREATE TABLE Order_Items (
