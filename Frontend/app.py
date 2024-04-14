@@ -19,6 +19,11 @@ def edititem():
     # get item ID and do stuff
     return render_template("edititem.html")
 
+@app.route("/sellitem")
+def sellitem():
+    # get item ID and do stuff
+    return render_template("sellitem.html")
+
 @app.route("/stockmanagement")
 def stockmanagement():
     return render_template("stockmanagement.html")
