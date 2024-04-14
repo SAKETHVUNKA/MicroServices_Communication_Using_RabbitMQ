@@ -1,3 +1,7 @@
+CREATE DATABASE cc_project;
+
+USE cc_project;
+
 CREATE TABLE Products (
   product_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
@@ -41,3 +45,4 @@ CREATE TABLE Order_Items (
   FOREIGN KEY (order_id) REFERENCES Orders(order_id),
   FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
+

@@ -23,41 +23,41 @@ services:
       - "5555:5555"
     networks:
       - my-app-network
-    restart: on-failure
     depends_on:
       - rabbitmq
+    restart: on-failure
 
   consumer_one:
     build: ./consumer_one
     networks:
       - my-app-network
-    restart: on-failure
     depends_on:
       - rabbitmq
+    restart: on-failure
 
   consumer_two:
     build: ./consumer_two
     networks:
       - my-app-network
-    restart: on-failure
     depends_on:
       - rabbitmq
+    restart: on-failure
 
   consumer_three:
     build: ./consumer_three
     networks:
       - my-app-network
-    restart: on-failure
     depends_on:
       - rabbitmq
+    restart: on-failure
 
   consumer_four:
     build: ./consumer_four
     networks:
       - my-app-network
-    restart: on-failure
     depends_on:
       - rabbitmq
+    restart: on-failure
 
 networks:
   my-app-network: 
