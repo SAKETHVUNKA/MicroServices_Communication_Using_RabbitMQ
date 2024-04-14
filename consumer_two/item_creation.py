@@ -32,7 +32,7 @@ def item_creation_consumer(ch, method, properties, body):
     reorder_level = message.get('reorder_level')
     
     # Extract correlation_id from the request properties
-    correlation_id = properties.correlation_id
+    correlation_id = message.get('correlation_id')
     
     try:
         # Insert item details into the database

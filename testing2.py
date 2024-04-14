@@ -18,9 +18,10 @@ mysql_connection = mysql.connector.connect(
 mysql_cursor = mysql_connection.cursor()
 
 def item_creation_consumer(ch, method, properties, body):
-    print("Message received: {body}")
     # Decode the incoming JSON message
     message = json.loads(body)
+    # print("Message received: {message}")
+    # print(message)
     # Extract item details from the message
     name = message.get('name')
     description = message.get('description')
@@ -31,9 +32,11 @@ def item_creation_consumer(ch, method, properties, body):
     company = message.get('company')
     image = message.get('image')
     reorder_level = message.get('reorder_level')
+    correlation_id = message.get('correlation_id')
+    # print(correlation_id)
     
     # Extract correlation_id from the request properties
-    correlation_id = properties.correlation_id
+    # correlation_id = properties.correlation_id
     
     try:
         # Insert item details into the database
@@ -50,7 +53,7 @@ def item_creation_consumer(ch, method, properties, body):
         "message": response,
         "correlation_id": correlation_id
     }
-    
+    print(response_data)
     # Publish the response message
     channel.basic_publish(exchange='', routing_key="producer_queue", body=json.dumps(response_data))
     

@@ -87,10 +87,10 @@ def modify_stock_particulars(operation, correlation_id):
     return json.dumps(response_data)
 
 def stock_management_consumer(ch, method, properties, body):
-    correlation_id = properties.correlation_id
     # Parse the JSON body
     try:
         operation = json.loads(body)
+        correlation_id = operation.get('correlation_id')
         # Check the operation type and call the corresponding function
         if operation.get('operation_type') == 'fetch_all':
             # Fetch all stock data and return as JSON

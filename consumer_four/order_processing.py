@@ -82,7 +82,7 @@ def edit_order(order_id, order_data, correlation_id):
 
 def order_processing_consumer(ch, method, properties, body):
     request = json.loads(body)
-    correlation_id = properties.correlation_id
+    correlation_id = request.get('correlation_id')
     request_type = request.get('type', None)
     if request_type == 'fetch_all_order_details':
         orders = fetch_all_order_details(correlation_id)

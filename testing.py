@@ -329,14 +329,25 @@ channel.queue_declare(queue='producer_queue')
 def publish_message(queue_name, message):
     global channel
     json_data = json.dumps(message)
-    if connection and connection.is_open:
-        channel.basic_publish(exchange='', routing_key=queue_name, body=json_data.encode('utf-8'))
-    else:
+    if not (connection and connection.is_open):
         channel = get_channel()
-        channel.basic_publish(exchange='', routing_key=queue_name, body=json_data.encode('utf-8'))
+    k = True
+    while k:
+        try :
+            channel.basic_publish(exchange='', routing_key=queue_name, body=json_data.encode('utf-8'))
+            print("done")
+            k = False
+        except Exception as e:
+            k =True
+    #     channel.basic_publish(exchange='', routing_key=queue_name, body=json_data.encode('utf-8'))
+    #     print("done")
+    # else:
+    #     channel = get_channel()
+    #     channel.basic_publish(exchange='', routing_key=queue_name, body=json_data.encode('utf-8'))
+    #     print("done")
 
-def consume_message():
-    global channel
+def consume_message(channel):
+    # print("in consume message")
     method_frame, header_frame, body = channel.basic_get(queue="producer_queue")
     if method_frame:
         print(" [x] Received %r" % body)
@@ -346,16 +357,37 @@ def consume_message():
         return None
 
 response_queues = {}
+# def response_consumer():
+#     while True:
+#         response = consume_message()
+#         if response:
+#             print("in response consumer : ",response)
+#             response_data = json.loads(response)
+#             correlation_id = response_data.get("correlation_id")
+#             response_queue = response_queues.get(correlation_id)
+#             if response_queue:
+#                 response_queue.put(response_data)
 def response_consumer():
+    connection1 = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+    channel1 = connection1.channel()
     while True:
-        response = consume_message()
+        if not (connection1 and connection1.is_open and channel1):
+            channel.close()
+            connection.close()
+            connection1 = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+            channel1 = connection1.channel()
+        # try:
+        response = consume_message(channel1)
         if response:
-            print("in response consumer : ",response)
-            response_data = json.loads(response)
-            correlation_id = response_data.get("correlation_id")
-            response_queue = response_queues.get(correlation_id)
-            if response_queue:
-                response_queue.put(response_data)
+                print("in response consumer : ",response)
+                response_data = json.loads(response)
+                correlation_id = response_data.get("correlation_id")
+                response_queue = response_queues.get(correlation_id)
+                if response_queue is not None :
+                    response_queue.put(response_data)
+        # except Exception as e:
+        #     # return
+        #     print("Error in response consumer:", e)
 
 response_thread = threading.Thread(target=response_consumer)
 response_thread.daemon = True
@@ -367,7 +399,9 @@ def process_request(queue_name, request_data):
     data["correlation_id"] = correlation_id
     response_queue = queue.Queue()
     response_queues[correlation_id] = response_queue
+    print("before")
     publish_message(queue_name, data)
+    print("after")
     return correlation_id
 
 @app.route('/health_check', methods=['POST'])

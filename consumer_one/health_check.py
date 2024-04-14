@@ -22,7 +22,7 @@ def health_check_consumer(ch, method, properties, body):
     container_name = request_data.get('container_name')
     
     # Extract correlation_id from the request properties
-    correlation_id = properties.correlation_id
+    correlation_id = request_data.get('correlation_id')
     
     health_status = check_container_health(container_name)
     
