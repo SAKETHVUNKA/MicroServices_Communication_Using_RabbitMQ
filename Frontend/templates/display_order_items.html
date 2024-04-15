@@ -59,14 +59,14 @@
   </head>
   <body>
 
-    {% for item in dataDict %}
+    {% for item in dataList %}
 
     <div class="lender-box">
       <div class="discription">
         <div id="data">
-          <p>Item Name: {{ item["name"] }}</p>
-          <p>Quantity: {{ item["current_stock"] }}</p>
-          <p>Price: {{ item["unit_price"] }}</p>
+          <p>Item ID: {{ item[1] }}</p>
+          <p>Quantity: {{ item[2] }}</p>
+          <p>Price: {{ item[3] }}</p>
         </div>
       </div>
     </div>  

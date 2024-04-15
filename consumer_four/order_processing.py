@@ -27,7 +27,7 @@ def fetch_order_items(order_id, correlation_id):
     mysql_cursor.execute("SELECT * FROM Order_Items WHERE order_id = %s", (order_id,))
     order_items = mysql_cursor.fetchall()
     response = {'order_id': order_id, 'order_items': order_items, 'correlation_id': correlation_id}
-    return json.dumps(response)
+    return json.dumps(response, indent=4, default=str)
 
 def create_order(order_data, correlation_id):
     try:

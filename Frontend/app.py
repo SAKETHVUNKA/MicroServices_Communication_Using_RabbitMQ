@@ -13,8 +13,52 @@ def home():
 def healthcheck():
     return render_template("healthcheck.html")
 
-@app.route("/additem")
+@app.route("/additem", methods=["GET", "POST"])
 def additem():
+    if request.method == 'POST':
+
+        def send_stockmanagement_request(operation_type):
+            url = "http://0.0.0.0:5555/create_item"
+            headers = {'Content-Type': 'application/json'}
+            payload = {
+                'operation_type': operation_type,
+
+                'name': request.form['itemName'],
+                'description': request.form['description'],
+                'category': request.form['category'],
+                'unit_price': request.form['sellingPrice'],
+                'cost_price': request.form['purchasePrice'],
+                'current_stock': request.form['quantity'],
+                'company': request.form['company'],
+                'image': request.form['imageUpload'],
+                'date_of_manufacture': request.form['dateManufacture'],
+                'date_of_expiry': request.form['useBy'],
+                'supplier_id': request.form['distributor'],
+                'reorder_level': 0,
+
+                # 'placeManufacture': request.form['placeManufacture'],
+            }
+
+            response = requests.post(url, json=payload, headers=headers)
+            return response.text
+
+        def get_stockmanagement_response(correlation_id):
+            url = "http://localhost:5555/response"
+            headers = {'Content-Type': 'application/json'}
+            payload = {'correlation_id': correlation_id}
+            response = requests.post(url, json=payload, headers=headers)
+            return response.json()
+
+        correlation_id = send_stockmanagement_request("create_order")
+        print("Request sent. Correlation ID:", correlation_id)
+
+        # Wait for a response
+        response = None
+        while response is None:
+            response = get_stockmanagement_response(correlation_id)
+            
+        print("Response received:", response)
+        
     return render_template("additem.html")
 
 @app.route("/edititem/<product_id>", methods=["GET", "POST"])
@@ -99,7 +143,7 @@ def stockmanagement():
         response = get_stockmanagement_response(correlation_id)
         
     # print("Response received:", response)
-    print(response["stock_data"])
+    # print(response["stock_data"])
 
     return render_template("stockmanagement.html", dataDict = response["stock_data"])
 
@@ -133,9 +177,40 @@ def ordertracking():
     response = None
     while response is None:
         response = get_stockmanagement_response(correlation_id)
-        
-    print("Response received:", response['orders'])
 
     return render_template("ordertracking.html", dataList = response['orders'])
+
+@app.route("/display_items/<order_id>")
+def display_items(order_id):
+
+    def send_stockmanagement_request(operation_type):
+        url = "http://0.0.0.0:5555/order_processing"
+        headers = {'Content-Type': 'application/json'}
+        payload = {
+            'order_id': order_id,
+            'type': operation_type
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        return response.text
+
+    # Get the response for a particular correlation_id
+    def get_stockmanagement_response(correlation_id):
+        url = "http://localhost:5555/response"
+        headers = {'Content-Type': 'application/json'}
+        payload = {'correlation_id': correlation_id}
+        response = requests.post(url, json=payload, headers=headers)
+        return response.json()
+
+    correlation_id = send_stockmanagement_request("fetch_order_items")
+    print("Request sent. Correlation ID:", correlation_id)
+
+    # Wait for a response
+    response = None
+    while response is None:
+        response = get_stockmanagement_response(correlation_id)
+        
+    # print("Response received:", response)
+
+    return render_template("display_order_items.html", dataList=response["order_items"])
 
 app.run(port=8000, debug=True)

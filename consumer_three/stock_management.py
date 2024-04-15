@@ -47,7 +47,7 @@ def fetch_all_stock_data(correlation_id):
         "correlation_id": correlation_id
     }
 
-    return json.dumps(response_data)
+    return json.dumps(response_data, indent=4, default=str)
 
 def modify_stock_particulars(operation, correlation_id):
     # Extract operation details from the JSON body

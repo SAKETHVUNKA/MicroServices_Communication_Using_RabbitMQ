@@ -67,18 +67,17 @@
     <div class="lender-box">
       <div class="discription">
         <div id="data">
-          <p>Order: {  }</p>
-          <p>Item List: </p>
-          <p>Status:</p>
+          <p>Order: {{ orderList[0] }}</p>
+          <p>Item List: <button onclick="window.location.href = `/display_items/{{ orderList[0] }}`;">View Items</button></p>
           <div id="status">
             <!-- //////////////////// -->
             <!-- for the present status you need to just add class "presentStatus" in particular div of classes cancelled, rejected, completed -->
-            <div class="statusBox Cancelled presentStatus">Cancelled</div>
-            <div class="statusBox Rejected">Rejected</div>
-            <div class="statusBox Completed">Completed</div>
-            <div class="statusBox InProgress">In Progress</div>
+            <div class="statusBox Cancelled {% if orderList[4] == 'cancelled' %} presentStatus {% endif %}">Cancelled</div>
+            <div class="statusBox Rejected {% if orderList[4] == 'rejected' %} presentStatus {% endif %}">Rejected</div>
+            <div class="statusBox Completed {% if orderList[4] == 'completed' %} presentStatus {% endif %}">Completed</div>
+            <div class="statusBox InProgress {% if orderList[4] == 'in progress' %} presentStatus {% endif %}">In Progress</div>
           </div>
-          <button type="submit" class="select-button">change status</button>
+          <button type="submit" class="select-button">Edit Status</button>
         </div>
       </div>
     </div>

@@ -29,10 +29,10 @@ def item_creation_consumer(ch, method, properties, body):
     current_stock = message.get('current_stock')
     company = message.get('company')
     image = message.get('image')
-    reorder_level = message.get('reorder_level')
-    supplier_id = message.get('supplier_id')
     date_of_manufacture = message.get('date_of_manufacture')
     date_of_expiry = message.get('date_of_expiry')
+    supplier_id = message.get('supplier_id')
+    reorder_level = message.get('reorder_level')
     
     # Extract correlation_id from the request properties
     correlation_id = message.get('correlation_id')
