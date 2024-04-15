@@ -70,9 +70,11 @@
                 <option value="">option2</option>
                 <option value="">option3</option>
             </select>
-        </p>
-        <p>Selling Price : <input type="number" class="form-control"> per unit</p>
-        <p>No of Units : <input type="number" class="form-control"></p>
+          </p>
+        {% comment %} get item names from the database {% endcomment %}
+          <p>Selling Price : <input type="number" class="form-control"> per unit</p>
+        {% comment %} make this value to be displayed instead of taking input from user {% endcomment %}
+          <p>No of Units : <input type="number" class="form-control"></p>
         </div>
       </div>
       <button type="submit" class="select-button">Add</button>
