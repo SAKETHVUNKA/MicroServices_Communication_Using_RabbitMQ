@@ -66,7 +66,8 @@ def modify_stock_particulars(operation, correlation_id):
                 update_values.append(new_data[field])
             else:
                 update_query += f"{field} = %s, "
-                update_values.append(existing_data[field])
+                # update_values.append(existing_data[field])
+                update_values.append(existing_data[existing_data.index(field)])
         update_query = update_query.rstrip(', ') + " WHERE product_id = %s"
         update_values.append(product_id)
 

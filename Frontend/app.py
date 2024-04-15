@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, url_for
+from flask import Flask, jsonify, render_template, url_for, request
 import json
 import pika
 import requests
@@ -17,10 +17,54 @@ def healthcheck():
 def additem():
     return render_template("additem.html")
 
-@app.route("/edititem")
-def edititem():
-    # get item ID and do stuff
-    return render_template("edititem.html")
+@app.route("/edititem/<product_id>", methods=["GET", "POST"])
+def edititem(product_id):
+    if request.method == 'POST':
+
+        def send_stockmanagement_request(operation_type):
+            url = "http://0.0.0.0:5555/stock_management"
+            headers = {'Content-Type': 'application/json'}
+            payload = {
+                'operation_type': operation_type,
+                'product_id': product_id,
+
+                'new_data': {
+                    'name': request.form['itemName'],
+                    'description': request.form['description'],
+                    'category': request.form['category'],
+                    'unit_price': request.form['sellingPrice'],
+                    'cost_price': request.form['purchasePrice'],
+                    'current_stock': request.form['quantity'],
+                    'company': request.form['company'],
+                    'image': request.form['imageUpload'],
+
+                    # 'dateManufacture': request.form['dateManufacture'],
+                    # 'useBy': request.form['useBy'],
+                    # 'placeManufacture': request.form['placeManufacture'],
+                    # 'distributor': request.form['distributor'],
+                }
+            }
+            response = requests.post(url, json=payload, headers=headers)
+            return response.text
+
+        def get_stockmanagement_response(correlation_id):
+            url = "http://localhost:5555/response"
+            headers = {'Content-Type': 'application/json'}
+            payload = {'correlation_id': correlation_id}
+            response = requests.post(url, json=payload, headers=headers)
+            return response.json()
+
+        correlation_id = send_stockmanagement_request("modify")
+        print("Request sent. Correlation ID:", correlation_id)
+
+        # Wait for a response
+        response = None
+        while response is None:
+            response = get_stockmanagement_response(correlation_id)
+            
+        print("Response received:", response)
+
+    return render_template("edititem.html", product_id=product_id)
 
 @app.route("/sellitem")
 def sellitem():
@@ -54,9 +98,10 @@ def stockmanagement():
     while response is None:
         response = get_stockmanagement_response(correlation_id)
         
-    print("Response received:", response) 
+    # print("Response received:", response)
+    print(response["stock_data"])
 
-    return render_template("stockmanagement.html")
+    return render_template("stockmanagement.html", dataDict = response["stock_data"])
 
 @app.route("/addorder")
 def addorder():

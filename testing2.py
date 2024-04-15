@@ -11,7 +11,7 @@ mysql_connection = mysql.connector.connect(
     host='localhost',
     port=3306,
     user='root',
-    password='Saketh$12485',
+    password='pass',
     database='cc_project'
 )
 

@@ -20,7 +20,7 @@ services:
   producer:
     build: ./producer
     ports:
-      - "5555:5555"
+      - "5555:5000"
     networks:
       - my-app-network
     depends_on:

@@ -95,7 +95,7 @@
   </head>
   <body>
     <div class="container">
-      <form>
+      <form method="post" action="/edititem/{{ product_id }}">
         <div class="row">
           <div class="column">
             <label for="itemName">Item Name:</label>
@@ -164,7 +164,7 @@
             <button type="submit">Add</button>
           </div>
         </div>
-      </form>
+      </>
     </div>
   </body>
 </html>

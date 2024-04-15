@@ -359,13 +359,13 @@ def consume_message(channel):
 
 response_queues = {}
 def response_consumer():
-    connection1 = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+    connection1 = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
     channel1 = connection1.channel()
     while True:
         if not (connection1 and connection1.is_open and channel1):
-            channel.close()
-            connection.close()
-            connection1 = pika.BlockingConnection(pika.ConnectionParameters('localhost', 5672))
+            channel1.close()
+            connection1.close()
+            connection1 = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
             channel1 = connection1.channel()
 
         response = consume_message(channel1)
