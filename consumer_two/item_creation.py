@@ -30,14 +30,17 @@ def item_creation_consumer(ch, method, properties, body):
     company = message.get('company')
     image = message.get('image')
     reorder_level = message.get('reorder_level')
+    supplier_id = message.get('supplier_id')
+    date_of_manufacture = message.get('date_of_manufacture')
+    date_of_expiry = message.get('date_of_expiry')
     
     # Extract correlation_id from the request properties
     correlation_id = message.get('correlation_id')
     
     try:
         # Insert item details into the database
-        sql = "INSERT INTO Products (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level)
+        sql = "INSERT INTO Products (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level, supplier_id, date_of_manufacture, date_of_expiry) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level, supplier_id, date_of_manufacture, date_of_expiry)
         mysql_cursor.execute(sql, val)
         mysql_connection.commit()
         response = "Item inserted into database."

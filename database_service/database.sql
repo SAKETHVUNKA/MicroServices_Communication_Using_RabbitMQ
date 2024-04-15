@@ -11,8 +11,11 @@ CREATE TABLE Products (
   cost_price DECIMAL(10,2) NOT NULL,
   current_stock INT NOT NULL DEFAULT 0,
   company VARCHAR(255),  
-  image BLOB,           
-  reorder_level INT NOT NULL DEFAULT -1,  
+  image BLOB,
+  reorder_level INT NOT NULL DEFAULT -1,
+  supplier_id INT NOT NULL ,
+  date_of_manufacture DATE DEFAULT NULL,
+  date_of_expiry DATE DEFAULT NULL,
   PRIMARY KEY (product_id)
 );  
 
@@ -46,11 +49,11 @@ CREATE TABLE Order_Items (
   FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
 
-INSERT INTO Products (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level)
+INSERT INTO Products (name, description, category, unit_price, cost_price, current_stock, company, image, reorder_level, supplier_id, date_of_manufacture, date_of_expiry)
 VALUES 
-('Laptop', 'High-performance laptop', 'Electronics', 1200.00, 900.00, 10, 'ABC Electronics', NULL, 5),
-('Smartphone', 'Latest smartphone model', 'Electronics', 800.00, 600.00, 15, 'XYZ Tech', NULL, 7),
-('Headphones', 'Noise-canceling headphones', 'Electronics', 100.00, 70.00, 20, 'SoundTech', NULL, 10);
+('Laptop', 'High-performance laptop', 'Electronics', 1200.00, 900.00, 10, 'ABC Electronics', NULL, 5, 4, '2024-04-10', '2024-04-15'),
+('Smartphone', 'Latest smartphone model', 'Electronics', 800.00, 600.00, 15, 'XYZ Tech', NULL, 7, 4, NULL, NULL),
+('Headphones', 'Noise-canceling headphones', 'Electronics', 100.00, 70.00, 20, 'SoundTech', NULL, 10, 4, '2024-04-10', NULL);
 
 INSERT INTO Suppliers (name, contact_name, email, phone_number, address)
 VALUES 
