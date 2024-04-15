@@ -20,7 +20,8 @@ def fetch_all_order_details(correlation_id):
     mysql_cursor.execute("SELECT * FROM Orders")
     orders = mysql_cursor.fetchall()
     response = {'orders': orders, 'correlation_id': correlation_id}
-    return json.dumps(response)
+    # return json.dumps(response
+    return json.dumps(response, indent=4, default=str)
 
 def fetch_order_items(order_id, correlation_id):
     mysql_cursor.execute("SELECT * FROM Order_Items WHERE order_id = %s", (order_id,))

@@ -62,13 +62,14 @@
   </head>
   <body>
     <!-- apply for loop for class leander-box -->
+    {% for orderList in dataList %}
 
     <div class="lender-box">
       <div class="discription">
         <div id="data">
-          <p>Order : </p>
-          <p>Item List : </p>
-          <p>Status :</p>
+          <p>Order: {  }</p>
+          <p>Item List: </p>
+          <p>Status:</p>
           <div id="status">
             <!-- //////////////////// -->
             <!-- for the present status you need to just add class "presentStatus" in particular div of classes cancelled, rejected, completed -->
@@ -81,6 +82,8 @@
         </div>
       </div>
     </div>
+
+    {% endfor %}
     <!-- for loop end -->
   </body>
   <script></script>
