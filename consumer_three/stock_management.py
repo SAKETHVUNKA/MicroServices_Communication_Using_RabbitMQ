@@ -35,7 +35,10 @@ def fetch_all_stock_data(correlation_id):
             'current_stock': row[6],
             'company': row[7],
             'image': row[8],
-            'reorder_level': row[9]
+            'reorder_level': row[9],
+            'supplier_id': row[10],
+            'date_of_manufacture': row[11],
+            'date_of_expiry': row[12]
         }
         stock_data.append(product)
 
@@ -60,7 +63,7 @@ def modify_stock_particulars(operation, correlation_id):
         # Prepare the update query
         update_query = "UPDATE Products SET "
         update_values = []
-        for field in ['name', 'description', 'category', 'unit_price', 'cost_price', 'current_stock', 'company', 'image', 'reorder_level']:
+        for field in ['name', 'description', 'category', 'unit_price', 'cost_price', 'current_stock', 'company', 'image', 'reorder_level', 'supplier_id', 'date_of_manufacture', 'date_of_expiry']:
             if field in new_data and new_data[field] is not None:
                 update_query += f"{field} = %s, "
                 update_values.append(new_data[field])
