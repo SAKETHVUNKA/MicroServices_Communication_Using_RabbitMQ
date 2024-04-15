@@ -7,16 +7,15 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672)
 channel = connection.channel()
 
 # Establish connection to MySQL database
-mysql_connection = mysql.connector.connect(
-    host='database',
-    port='3306',
-    user='root',
-    password='mypassword',
-    database='cc_project'
-)
-mysql_cursor = mysql_connection.cursor()
+# mysql_connection = mysql.connector.connect(
+#     host='database',
+#     port='3306',
+#     user='root',
+#     password='mypassword',
+#     database='cc_project'
+# )
 
-def fetch_all_stock_data(correlation_id):
+def fetch_all_stock_data(correlation_id ,mysql_cursor):
     # Query to fetch data of all stocks from the database
     query = "SELECT * FROM Products"
     mysql_cursor.execute(query)
@@ -49,7 +48,7 @@ def fetch_all_stock_data(correlation_id):
 
     return json.dumps(response_data, indent=4, default=str)
 
-def modify_stock_particulars(operation, correlation_id):
+def modify_stock_particulars(operation, correlation_id ,mysql_cursor,mysql_connection) :
     # Extract operation details from the JSON body
     product_id = operation.get('product_id')
     new_data = operation.get('new_data')
@@ -92,16 +91,24 @@ def modify_stock_particulars(operation, correlation_id):
 
 def stock_management_consumer(ch, method, properties, body):
     # Parse the JSON body
+    mysql_connection = mysql.connector.connect(
+    host='database',
+    port='3306',
+    user='root',
+    password='mypassword',
+    database='cc_project'
+    )
+    mysql_cursor = mysql_connection.cursor()
     try:
         operation = json.loads(body)
         correlation_id = operation.get('correlation_id')
         # Check the operation type and call the corresponding function
         if operation.get('operation_type') == 'fetch_all':
             # Fetch all stock data and return as JSON
-            stock_data_json = fetch_all_stock_data(correlation_id)
+            stock_data_json = fetch_all_stock_data(correlation_id ,mysql_cursor)
             ch.basic_publish(exchange='', routing_key="producer_queue", body=stock_data_json)
         elif operation.get('operation_type') == 'modify':
-            response = modify_stock_particulars(operation, correlation_id)
+            response = modify_stock_particulars(operation, correlation_id ,mysql_cursor,mysql_connection)
             ch.basic_publish(exchange='', routing_key="producer_queue", body=response)
         else:
             response_data = {
@@ -115,6 +122,7 @@ def stock_management_consumer(ch, method, properties, body):
             "correlation_id": correlation_id
         }
         ch.basic_publish(exchange='', routing_key="producer_queue", body=json.dumps(response_data))
+    connection.close()
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def callback(ch, method, properties, body):
