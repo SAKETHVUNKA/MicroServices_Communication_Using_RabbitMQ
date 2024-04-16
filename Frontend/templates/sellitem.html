@@ -61,27 +61,33 @@
   </head>
   <body>
     <div class="lender-box">
+      <form method="post" action="/sellitem">
       <div class="discription">
-        
         <div id="data">
           <p>Item Name : 
-            <select name="dropdown" id="" class="form-control">
-                <option value="">option1</option>
-                <option value="">option2</option>
-                <option value="">option3</option>
+            <select name="dropdown" id="itemSelect" class="form-control">
+              {% for item in dataList %}
+                <option value="{{ item['product_id'],item['name'],item['unit_price'] }}" data-price="{{ item['unit_price'] }}">{{ item['name'] }}</option>
+              {% endfor %}
             </select>
           </p>
-        {% comment %} get item names from the database {% endcomment %}
-          <p>Selling Price : <input type="number" class="form-control"> per unit</p>
-        {% comment %} make this value to be displayed instead of taking input from user {% endcomment %}
-          <p>No of Units : <input type="number" class="form-control"></p>
+          <p>Selling Price: <span id="priceDisplay">{{ dataList[0]['unit_price'] if dataList else 0.00 }}</span></p>
+          <p>No of Units: <input name="quantity" type="number" class="form-control"></p>
         </div>
+
       </div>
       <button type="submit" class="select-button">Add</button>
-    </div>  
-    </div>  
+    </form>
+    </div> 
   </body>
   <script>
+    // Function to update the price when the item selection changes
+    document.getElementById("itemSelect").addEventListener("change", function() {
+      var selectedItem = this.value; // Get the value of the selected item
+      var selectedOption = this.options[this.selectedIndex]; // Get the selected option element
+      var price = selectedOption.getAttribute("data-price"); // Get the price from the "data-price" attribute of the selected option
+      document.getElementById("priceDisplay").textContent = price; // Update the displayed price
+    });
   </script>
 </html>
 

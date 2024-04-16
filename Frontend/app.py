@@ -155,10 +155,68 @@ def edititem(product_id):
 
 ##################################################################################################
 
-@app.route("/sellitem")
+total = 0
+items = []
+
+@app.route("/addorder", methods=["GET", "POST"])
+def addorder():
+
+    if request.method == "POST":
+        # send req
+
+        global total
+        global items
+        items = []
+        total = 0
+        
+    else:
+        return render_template("addorder.html", items = items, total = total)
+
+##################################################################################################
+
+@app.route("/sellitem", methods=["GET", "POST"])
 def sellitem():
-    # get item ID and do stuff
-    return render_template("sellitem.html")
+
+    if request.method == "POST":
+        prod_id, prod_name, unit_price = request.form["dropdown"][1:-1].split(",")
+        prod_name = prod_name.strip()[1:-1]
+        unit_price = unit_price.strip()
+        prod_id = prod_id.strip()
+        qty = request.form["quantity"]
+
+        global items
+        global total
+        items.append((prod_name, qty))
+        total += float(unit_price) * int(qty)
+
+        return redirect(url_for("addorder"))
+
+    def send_sellitem_request(operation_type):
+        url = "http://0.0.0.0:5555/stock_management"
+        headers = {'Content-Type': 'application/json'}
+        payload = {
+            'operation_type': operation_type
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        return response.text
+
+    # Get the response for a particular correlation_id
+    def get_sellitem_response(correlation_id):
+        url = "http://localhost:5555/response"
+        headers = {'Content-Type': 'application/json'}
+        payload = {'correlation_id': correlation_id}
+        response = requests.post(url, json=payload, headers=headers)
+        return response.json()
+
+    correlation_id = send_sellitem_request("fetch_all")
+    print("Request sent. Correlation ID:", correlation_id)
+
+    # Wait for a response
+    response = None
+    while response is None:
+        response = get_sellitem_response(correlation_id)
+
+    return render_template("sellitem.html", dataList = response["stock_data"])
 
 ##################################################################################################
 
@@ -193,12 +251,6 @@ def stockmanagement():
     # print(response["stock_data"])
 
     return render_template("stockmanagement.html", dataDict = response["stock_data"])
-
-##################################################################################################
-
-@app.route("/addorder")
-def addorder():
-    return render_template("addorder.html")
 
 ##################################################################################################
 

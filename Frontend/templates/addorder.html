@@ -73,9 +73,11 @@
         </div>
 
         <!-- apply for loop here -->
+        {% for item in items %}
         <div class="item">
-          <p>item1</p>
+          <p>{{ item[0] }} x {{ item[1] }}</p>
         </div>
+        {% endfor %}
         <!---->
 
         <div class="button-container">
@@ -83,7 +85,7 @@
         </div>
 
         <div class="amount-container">
-          <p>Total Amount : </p>
+          <p>Total Amount: {{ total }}</p>
         </div>
 
         <button type="submit" class="select-button">Add Order</button>
