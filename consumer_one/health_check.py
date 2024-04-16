@@ -1,6 +1,7 @@
 import pika
 import subprocess
 import json
+# import docker
 
 # Establish connection to RabbitMQ server
 connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', 5672))
@@ -9,11 +10,12 @@ channel = connection.channel()
 # Establish connection to MySQL database
 def check_container_health(container_name):
     try:
-        # Execute the docker inspect command to get the health status of the container
-        result = subprocess.run(["docker", "inspect", "--format='{{json .State.Health.Status}}'", container_name], capture_output=True, text=True, check=True)
-        health_status = result.stdout.strip()
-        return health_status
-    except subprocess.CalledProcessError as e:
+        # client = docker.from_env()
+        # container_name = 'producer'
+        # container = client.containers.get(container_name)
+        # return container.status
+        return "Closed"
+    except Exception as e:
         return f"Error: {e}"
 
 def health_check_consumer(ch, method, properties, body):
