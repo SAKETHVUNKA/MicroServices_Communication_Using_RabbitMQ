@@ -34,9 +34,9 @@ def create_order(order_data, correlation_id):
         # Parse JSON data
         order_data = json.loads(order_data)
         # Extract order details
-        order_date = order_data['order_date']
+        order_date = order_data.get('order_date')
         delivery_date = order_data.get('delivery_date', None)
-        total_price = order_data['total_price']
+        total_price = order_data.get('total_price')
         status = order_data.get('status', 'placed')
         order_items = order_data.get('order_items', [])
 
@@ -52,27 +52,45 @@ def create_order(order_data, correlation_id):
             product_id = item['product_id']
             quantity = item['quantity']
             unit_price = item['unit_price']
-            mysql_cursor.execute("INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES (%s, %s, %s, %s)",
-                                 (order_id, product_id, quantity, unit_price))
-        mysql_connection.commit()
-        response = {'status': 'success', 'message': 'Order created successfully.', 'correlation_id': correlation_id}
+            select_query = f"SELECT * FROM Products WHERE product_id = %s"
+            mysql_cursor.execute(select_query, (product_id,))
+            existing_data = mysql_cursor.fetchone()
+            name = existing_data[1]
+            if existing_data[6] < quantity:
+                response = {'status': 'failure', 'message': f'Insufficient quantity of product: {name}', 'correlation_id': correlation_id}
+                return json.dumps(response)
+            else:
+                mysql_cursor.execute("INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES (%s, %s, %s, %s)",(order_id, product_id, quantity, unit_price))
+                final_quantity = existing_data[6] - quantity
+                update_query = "UPDATE Products SET current_stock = %s WHERE product_id = %s"
+                update_values = [final_quantity,product_id]
+                mysql_cursor.execute(update_query, tuple(update_values))
+                mysql_connection.commit()
+                response = {'status': 'success', 'message': 'Order created successfully.', 'correlation_id': correlation_id}
+        return json.dumps(response)
     except Exception as e:
         response = {'status': 'failure', 'message': str(e), 'correlation_id': correlation_id}
-    finally:
         return json.dumps(response)
 
 def edit_order(order_id, status, correlation_id):
     try:
-        # # Parse JSON data
-        # order_data = json.loads(order_data)
-        # # Extract order details
-        # status = order_data.get('status')
-
-        # Update order status in database
         if status:
-            mysql_cursor.execute("UPDATE Orders SET status = %s WHERE order_id = %s",
-                                 (status, order_id))
+            mysql_cursor.execute("UPDATE Orders SET status = %s WHERE order_id = %s",(status, order_id))
             mysql_connection.commit()
+
+            # If status is "cancelled" or "rejected", increase stock levels
+            if status.lower() == "cancelled" or status.lower() == "rejected":
+                # Retrieve order items to increment stock levels
+                mysql_cursor.execute("SELECT product_id, quantity FROM Order_Items WHERE order_id = %s", (order_id,))
+                order_items = mysql_cursor.fetchall()
+                for item in order_items:
+                    product_id = item[0]
+                    quantity = item[1] 
+                    # Increment stock level for each product
+                    mysql_cursor.execute("UPDATE Products SET current_stock = current_stock + %s WHERE product_id = %s",
+                                         (quantity, product_id))
+                mysql_connection.commit()
+
             response = {'status': 'success', 'message': 'Order status updated successfully.', 'correlation_id': correlation_id}
         else:
             response = {'status': 'failure', 'message': 'No status provided for update.', 'correlation_id': correlation_id}
