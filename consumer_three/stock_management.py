@@ -52,24 +52,23 @@ def modify_stock_particulars(operation, correlation_id ,mysql_cursor,mysql_conne
     # Extract operation details from the JSON body
     product_id = operation.get('product_id')
     new_data = operation.get('new_data')
-
     try:
         # Get the existing data for the product from the database
-        select_query = "SELECT * FROM Products WHERE product_id = %s"
+        select_query = f"SELECT * FROM Products WHERE product_id = %s"
         mysql_cursor.execute(select_query, (product_id,))
         existing_data = mysql_cursor.fetchone()
 
         # Prepare the update query
         update_query = "UPDATE Products SET "
         update_values = []
-        for field in ['name', 'description', 'category', 'unit_price', 'cost_price', 'current_stock', 'company', 'image', 'reorder_level', 'supplier_id', 'date_of_manufacture', 'date_of_expiry']:
-            if field in new_data and new_data[field] is not None:
+        columns = ['name', 'description', 'category', 'unit_price', 'cost_price', 'current_stock', 'company', 'image', 'reorder_level', 'supplier_id', 'date_of_manufacture', 'date_of_expiry']
+        for idx, field in enumerate(columns):
+            if field in new_data and new_data[field]:
                 update_query += f"{field} = %s, "
                 update_values.append(new_data[field])
             else:
                 update_query += f"{field} = %s, "
-                # update_values.append(existing_data[field])
-                update_values.append(existing_data[existing_data.index(field)])
+                update_values.append(existing_data[idx+1])
         update_query = update_query.rstrip(', ') + " WHERE product_id = %s"
         update_values.append(product_id)
 
@@ -122,7 +121,7 @@ def stock_management_consumer(ch, method, properties, body):
             "correlation_id": correlation_id
         }
         ch.basic_publish(exchange='', routing_key="producer_queue", body=json.dumps(response_data))
-    connection.close()
+    mysql_connection.close()
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def callback(ch, method, properties, body):

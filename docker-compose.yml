@@ -10,6 +10,7 @@ services:
       - my-app-network
 
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3.8-management
     ports:
       - "5672:5672"  # RabbitMQ messaging port
@@ -18,6 +19,7 @@ services:
       - my-app-network
 
   producer:
+    container_name: producer
     build: ./producer
     ports:
       - "5555:5000"
@@ -28,6 +30,7 @@ services:
     restart: on-failure
 
   consumer_one:
+    container_name: healthcheck
     build: ./consumer_one
     networks:
       - my-app-network
@@ -36,6 +39,7 @@ services:
     restart: on-failure
 
   consumer_two:
+    container_name: additem
     build: ./consumer_two
     networks:
       - my-app-network
@@ -44,6 +48,7 @@ services:
     restart: on-failure
 
   consumer_three:
+    container_name: stock
     build: ./consumer_three
     networks:
       - my-app-network
@@ -52,6 +57,7 @@ services:
     restart: on-failure
 
   consumer_four:
+    container_name: order
     build: ./consumer_four
     networks:
       - my-app-network

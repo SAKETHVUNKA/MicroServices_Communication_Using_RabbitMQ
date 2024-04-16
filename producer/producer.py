@@ -17,7 +17,7 @@ def get_channel(connection):
     return connection.channel() if connection else None
 
 connection = establish_connection()
-channel = get_channel()
+channel = get_channel(connection)
 channel.queue_declare(queue='health_check_queue')
 channel.queue_declare(queue='order_processing_queue')
 channel.queue_declare(queue='create_item_queue')
@@ -67,13 +67,13 @@ response_thread = threading.Thread(target=response_consumer)
 response_thread.daemon = True
 response_thread.start()
 
-def process_request(queue_name, request_data):
+def process_request(queue_name, request_data, channel):
     correlation_id = str(uuid.uuid4())
     data = request_data
     data["correlation_id"] = correlation_id
     response_queue = queue.Queue()
     response_queues[correlation_id] = response_queue
-    publish_message(queue_name, data)
+    publish_message(queue_name, data, channel)
     return correlation_id
 
 @app.route('/health_check', methods=['POST'])
@@ -89,7 +89,7 @@ def health_check():
 def order_processing():
     connection = establish_connection()
     channel = get_channel(connection)
-    resp = process_request('order_processing_queue', request.json ,channel)
+    resp = process_request('order_processing_queue', request.json, channel)
     channel.close()
     connection.close()
     return resp

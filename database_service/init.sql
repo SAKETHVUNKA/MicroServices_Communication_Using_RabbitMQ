@@ -34,7 +34,7 @@ CREATE TABLE Orders (
   order_date DATE NOT NULL,
   delivery_date DATE,
   total_price DECIMAL(10,2) NOT NULL,
-  status ENUM('placed', 'shipped', 'delivered', 'cancelled'),  
+  status ENUM('placed', 'shipped', 'completed', 'cancelled', 'rejected'),  
   PRIMARY KEY (order_id)
   -- buyer info to be added and handled in backend
 );
@@ -65,7 +65,7 @@ INSERT INTO Orders (order_date, delivery_date, total_price, status)
 VALUES 
 ('2024-04-10', '2024-04-15', 2400.00, 'placed'),
 ('2024-04-12', '2024-04-17', 1600.00, 'shipped'),
-('2024-04-14', '2024-04-19', 300.00, 'delivered');
+('2024-04-14', '2024-04-19', 300.00, 'completed');
 
 INSERT INTO Order_Items (order_id, product_id, quantity, unit_price)
 VALUES 

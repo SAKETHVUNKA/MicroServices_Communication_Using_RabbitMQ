@@ -61,12 +61,12 @@ def create_order(order_data, correlation_id):
     finally:
         return json.dumps(response)
 
-def edit_order(order_id, order_data, correlation_id):
+def edit_order(order_id, status, correlation_id):
     try:
-        # Parse JSON data
-        order_data = json.loads(order_data)
-        # Extract order details
-        status = order_data.get('status', None)
+        # # Parse JSON data
+        # order_data = json.loads(order_data)
+        # # Extract order details
+        # status = order_data.get('status')
 
         # Update order status in database
         if status:
@@ -91,7 +91,8 @@ def order_processing_consumer(ch, method, properties, body):
         orders = create_order(request['data'], correlation_id)
     elif request_type == 'edit_order':
         order_id = request['order_id']
-        orders = edit_order(order_id, request['data'], correlation_id)
+        status = request['status']
+        orders = edit_order(order_id, status, correlation_id)
     elif request_type == 'fetch_order_items':
         order_id = request['order_id']
         orders = fetch_order_items(order_id, correlation_id)

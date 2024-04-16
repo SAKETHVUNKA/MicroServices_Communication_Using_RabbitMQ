@@ -75,9 +75,10 @@
             <div class="statusBox Cancelled {% if orderList[4] == 'cancelled' %} presentStatus {% endif %}">Cancelled</div>
             <div class="statusBox Rejected {% if orderList[4] == 'rejected' %} presentStatus {% endif %}">Rejected</div>
             <div class="statusBox Completed {% if orderList[4] == 'completed' %} presentStatus {% endif %}">Completed</div>
-            <div class="statusBox InProgress {% if orderList[4] == 'in progress' %} presentStatus {% endif %}">In Progress</div>
+            <div class="statusBox InProgress {% if orderList[4] == 'shipped' %} presentStatus {% endif %}">Shipped</div>
+            <div class="statusBox InProgress {% if orderList[4] == 'placed' %} presentStatus {% endif %}">Placed</div>
           </div>
-          <button type="submit" class="select-button">Edit Status</button>
+          <button type="submit" onclick="window.location.href = `/changestatus/{{ orderList[0] }}`" class="select-button">Edit Status</button>
         </div>
       </div>
     </div>
