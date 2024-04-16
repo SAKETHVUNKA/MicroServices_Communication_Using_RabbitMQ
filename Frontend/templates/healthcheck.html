@@ -55,11 +55,13 @@
   </head>
   <body>
     <div class="lender-box">
-      <button type="submit" class="select-button">Test Add-Item</button>
-      <button type="submit" class="select-button">Test Stock-Management</button>
-      <button type="submit" class="select-button">Test Add-Order</button>
-      <button type="submit" class="select-button">Test Rabbit_mq</button>
-
+      <form method="post" action="/healthcheck">
+        <button type="submit" name="container" value="additem" class="select-button">Test Add-Item</button>
+        <button type="submit" name="container" value="stock" class="select-button">Test Stock-Management</button>
+        <button type="submit" name="container" value="order" class="select-button">Test Order</button>
+        <button type="submit" name="container" value="rabbitmq" class="select-button">Test Rabbit_mq</button>
+        <button type="submit" name="container" value="mysqldb" class="select-button">Test MySql</button>
+      </form>
       <div class="output">
         
       </div>

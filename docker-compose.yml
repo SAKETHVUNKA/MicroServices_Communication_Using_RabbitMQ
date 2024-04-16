@@ -3,6 +3,7 @@ version: "3.8"
 services:
 
   database:
+    container_name: mysqldb
     build: ./database_service
     ports:
       - "3307:3306"  # Mapping container's MySQL port 3306 to host port 3307

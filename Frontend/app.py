@@ -13,8 +13,38 @@ def home():
 
 ##################################################################################################
 
-@app.route("/healthcheck")
+@app.route("/healthcheck", methods=["POST", "GET"])
 def healthcheck():
+    if request.method == 'POST':
+        def send_healthcheck_request():
+            url = "http://0.0.0.0:5555/health_check"
+            headers = {'Content-Type': 'application/json'}
+            payload = {
+                'container_name': request.form['container']
+            }
+
+            response = requests.post(url, json=payload, headers=headers)
+            return response.text
+
+        def get_healthcheck_response(correlation_id):
+            url = "http://localhost:5555/response"
+            headers = {'Content-Type': 'application/json'}
+            payload = {'correlation_id': correlation_id}
+            response = requests.post(url, json=payload, headers=headers)
+            return response.json()
+
+        correlation_id = send_healthcheck_request()
+        print("Request sent. Correlation ID:", correlation_id)
+
+        # Wait for a response
+        response = None
+        while response is None:
+            response = get_healthcheck_response(correlation_id)
+            
+        # print("Response received:", response)
+        return redirect(url_for('home'))
+
+    # GET
     return render_template("healthcheck.html")
 
 ##################################################################################################
