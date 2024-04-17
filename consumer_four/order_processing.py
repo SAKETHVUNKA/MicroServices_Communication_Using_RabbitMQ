@@ -31,14 +31,21 @@ def fetch_order_items(order_id, correlation_id):
 
 def create_order(order_data, correlation_id):
     try:
-        # Parse JSON data
-        # order_data = json.loads(order_data)
-        # Extract order details
+        order_items = order_data.get('order_items', [])
+        for item in order_items:
+            product_id = item['product_id']
+            select_query = f"SELECT * FROM Products WHERE product_id = %s"
+            mysql_cursor.execute(select_query, (product_id,))
+            existing_data = mysql_cursor.fetchone()
+            name = existing_data[1]
+            if int(existing_data[6]) < int(quantity):
+                response = {'status': 'failure', 'message': f'Insufficient quantity of product: {name}', 'correlation_id': correlation_id}
+                return json.dumps(response)
+            
         order_date = order_data.get('order_date')
         delivery_date = order_data.get('delivery_date', None)
         total_price = order_data.get('total_price')
         status = order_data.get('status', 'placed')
-        order_items = order_data.get('order_items', [])
 
         # Insert order into database
         mysql_cursor.execute("INSERT INTO Orders (order_date, delivery_date, total_price, status) VALUES (%s, %s, %s, %s)",
@@ -46,6 +53,7 @@ def create_order(order_data, correlation_id):
         mysql_connection.commit()
         # Get the order ID of the newly inserted order
         order_id = mysql_cursor.lastrowid
+        order_items = order_data.get('order_items', [])
 
         # Insert order items into database
         for item in order_items:
@@ -55,17 +63,13 @@ def create_order(order_data, correlation_id):
             select_query = f"SELECT * FROM Products WHERE product_id = %s"
             mysql_cursor.execute(select_query, (product_id,))
             existing_data = mysql_cursor.fetchone()
-            name = existing_data[1]
-            if int(existing_data[6]) < int(quantity):
-                response = {'status': 'failure', 'message': f'Insufficient quantity of product: {name}', 'correlation_id': correlation_id}
-            else:
-                mysql_cursor.execute("INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES (%s, %s, %s, %s)",(order_id, product_id, quantity, unit_price))
-                final_quantity = int(existing_data[6]) - int(quantity)
-                update_query = "UPDATE Products SET current_stock = %s WHERE product_id = %s"
-                update_values = [final_quantity,product_id]
-                mysql_cursor.execute(update_query, tuple(update_values))
-                mysql_connection.commit()
-                response = {'status': 'success', 'message': 'Order created successfully.', 'correlation_id': correlation_id}
+            mysql_cursor.execute("INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES (%s, %s, %s, %s)",(order_id, product_id, quantity, unit_price))
+            final_quantity = int(existing_data[6]) - int(quantity)
+            update_query = "UPDATE Products SET current_stock = %s WHERE product_id = %s"
+            update_values = [final_quantity,product_id]
+            mysql_cursor.execute(update_query, tuple(update_values))
+            mysql_connection.commit()
+            response = {'status': 'success', 'message': 'Order created successfully.', 'correlation_id': correlation_id}
         return json.dumps(response, indent=4, default=str)
     except Exception as e:
         print("Here?")
