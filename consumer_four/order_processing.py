@@ -32,7 +32,7 @@ def fetch_order_items(order_id, correlation_id):
 def create_order(order_data, correlation_id):
     try:
         # Parse JSON data
-        order_data = json.loads(order_data)
+        # order_data = json.loads(order_data)
         # Extract order details
         order_date = order_data.get('order_date')
         delivery_date = order_data.get('delivery_date', None)
@@ -56,19 +56,19 @@ def create_order(order_data, correlation_id):
             mysql_cursor.execute(select_query, (product_id,))
             existing_data = mysql_cursor.fetchone()
             name = existing_data[1]
-            if existing_data[6] < quantity:
+            if int(existing_data[6]) < int(quantity):
                 response = {'status': 'failure', 'message': f'Insufficient quantity of product: {name}', 'correlation_id': correlation_id}
-                return json.dumps(response)
             else:
                 mysql_cursor.execute("INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) VALUES (%s, %s, %s, %s)",(order_id, product_id, quantity, unit_price))
-                final_quantity = existing_data[6] - quantity
+                final_quantity = int(existing_data[6]) - int(quantity)
                 update_query = "UPDATE Products SET current_stock = %s WHERE product_id = %s"
                 update_values = [final_quantity,product_id]
                 mysql_cursor.execute(update_query, tuple(update_values))
                 mysql_connection.commit()
                 response = {'status': 'success', 'message': 'Order created successfully.', 'correlation_id': correlation_id}
-        return json.dumps(response)
+        return json.dumps(response, indent=4, default=str)
     except Exception as e:
+        print("Here?")
         response = {'status': 'failure', 'message': str(e), 'correlation_id': correlation_id}
         return json.dumps(response)
 
@@ -115,7 +115,7 @@ def order_processing_consumer(ch, method, properties, body):
         order_id = request['order_id']
         orders = fetch_order_items(order_id, correlation_id)
     else:
-        orders = {'status': 'failure', 'message': 'Invalid request type.', 'correlation_id': correlation_id}
+        orders = json.dumps({'status': 'failure', 'message': 'Invalid request type.', 'correlation_id': correlation_id})
 
     ch.basic_publish(exchange='', routing_key="producer_queue", body=orders)
     ch.basic_ack(delivery_tag=method.delivery_tag)

@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, url_for, request, redirect
 import json
 import pika
 import requests
+from datetime import date
 
 app = Flask(__name__)
 
@@ -149,7 +150,7 @@ def edititem(product_id):
         while response is None:
             response = get_edititem_response(correlation_id)
             
-        print("Response received:", response)
+        # print("Response received:", response)
 
     return render_template("edititem.html", product_id=product_id)
 
@@ -160,14 +161,50 @@ items = []
 
 @app.route("/addorder", methods=["GET", "POST"])
 def addorder():
+    global items
+    global total
 
     if request.method == "POST":
         # send req
+        print(items)
 
-        global total
-        global items
+        def send_addorder_request(operation_type):
+            url = "http://0.0.0.0:5555/order_processing"
+            headers = {'Content-Type': 'application/json'}
+            payload = {
+                'type': operation_type,
+
+                'data': {
+                    'order_date': str(date.today()),
+                    'total_price': total,
+                    'order_items': [{'product_id':item[3], 'quantity':item[1], 'unit_price':item[2]} for item in items],
+                }
+            }
+
+            response = requests.post(url, json=payload, headers=headers)
+            return response.text
+
+        def get_addorder_response(correlation_id):
+            url = "http://localhost:5555/response"
+            headers = {'Content-Type': 'application/json'}
+            payload = {'correlation_id': correlation_id}
+            response = requests.post(url, json=payload, headers=headers)
+            return response.json()
+
+        if items:
+            correlation_id = send_addorder_request("create_order")
+            print("Request sent. Correlation ID:", correlation_id)
+
+            # Wait for a response
+            response = None
+            while response is None:
+                response = get_addorder_response(correlation_id)
+                
+            print("Response received:", response)
+        
         items = []
         total = 0
+        return render_template("addorder.html", items = items, total = total)
         
     else:
         return render_template("addorder.html", items = items, total = total)
@@ -186,7 +223,7 @@ def sellitem():
 
         global items
         global total
-        items.append((prod_name, qty))
+        items.append((prod_name, qty, unit_price, prod_id))
         total += float(unit_price) * int(qty)
 
         return redirect(url_for("addorder"))
