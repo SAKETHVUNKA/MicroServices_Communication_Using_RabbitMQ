@@ -43,7 +43,7 @@ def healthcheck():
             response = get_healthcheck_response(correlation_id)
             
         # print("Response received:", response)
-        return redirect(url_for('home'))
+        return render_template("healthcheck.html", message = response["health_status"])
 
     # GET
     return render_template("healthcheck.html")
