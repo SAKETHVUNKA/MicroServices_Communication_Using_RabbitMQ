@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, render_template, url_for, request, redirect
 import json
-import pika
 import requests
 from datetime import date
 

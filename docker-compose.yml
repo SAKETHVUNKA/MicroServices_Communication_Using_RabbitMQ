@@ -19,6 +19,17 @@ services:
     networks:
       - my-app-network
 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "8001:8000"
+    networks:
+      - my-app-network
+    depends_on:
+      - producer
+    restart: on-failure
+
   producer:
     container_name: producer
     build: ./producer
