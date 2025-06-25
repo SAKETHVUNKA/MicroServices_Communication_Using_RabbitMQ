@@ -136,7 +136,7 @@ SQL schema is defined in `database_service/init.sql`.
 
 ## ✍️ Author
 
-[Naga Saketh V](https://github.com/SAKETHVUNKA)
-[Adnan Zaki](https://github.com/zaki-1337)
+ - [Naga Saketh V](https://github.com/SAKETHVUNKA)
+ - [Adnan Zaki](https://github.com/zaki-1337)
 
 ---
